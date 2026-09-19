@@ -3,10 +3,8 @@ package database
 
 import (
 	"context"
-	"crypto/tls"
 	"fmt"
 	"log/slog"
-	"net/url"
 	"time"
 
 	"go.mongodb.org/mongo-driver/bson"
@@ -37,26 +35,10 @@ type DB struct {
 // and ensures required collection indexes are created.
 func Connect(ctx context.Context, cfg *config.Config) (*DB, error) {
 	// Allow Atlas connection and index setup enough time on the first startup.
-	pingCtx, cancel := context.WithTimeout(ctx, 15*time.Second)
+	pingCtx, cancel := context.WithTimeout(ctx, 30*time.Second)
 	defer cancel()
 
-	// Configure client options using the configured URI. Atlas SRV connections
-	// require verified TLS, while local MongoDB normally uses plain TCP.
-	mongoURL, err := url.Parse(cfg.MongoURI)
-	if err != nil {
-		return nil, fmt.Errorf("failed to parse mongodb URI: %w", err)
-	}
-	clientOptions := options.Client().
-		ApplyURI(cfg.MongoURI).
-		SetServerSelectionTimeout(15 * time.Second).
-		SetConnectTimeout(10 * time.Second).
-		SetSocketTimeout(15 * time.Second)
-	if mongoURL.Scheme == "mongodb+srv" {
-		clientOptions.SetTLSConfig(&tls.Config{
-			MinVersion: tls.VersionTLS12,
-			ServerName: mongoURL.Hostname(),
-		})
-	}
+	clientOptions := mongoClientOptions(cfg.MongoURI)
 
 	client, err := mongo.Connect(pingCtx, clientOptions)
 	if err != nil {
@@ -83,6 +65,14 @@ func Connect(ctx context.Context, cfg *config.Config) (*DB, error) {
 	}
 
 	return db, nil
+}
+
+func mongoClientOptions(uri string) *options.ClientOptions {
+	return options.Client().
+		ApplyURI(uri).
+		SetServerSelectionTimeout(30 * time.Second).
+		SetConnectTimeout(15 * time.Second).
+		SetSocketTimeout(30 * time.Second)
 }
 
 // Close gracefully disconnects the MongoDB client.

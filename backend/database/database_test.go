@@ -2,6 +2,7 @@ package database
 
 import (
 	"testing"
+	"time"
 
 	"github.com/live-polling-app/backend/config"
 )
@@ -22,7 +23,7 @@ func TestRedisKeyFormatters(t *testing.T) {
 
 func TestRedisOptionsParsesURL(t *testing.T) {
 	cfg := &config.Config{
-		RedisAddr: "redis://redis-user:redis-password@example.com:6380/4",
+		RedisAddr: "rediss://redis-user:redis-password@example.com:6380/4",
 		RedisDB:   7,
 	}
 
@@ -70,12 +71,29 @@ func TestRedisOptionsRejectsInvalidURL(t *testing.T) {
 
 func TestRedisOptionsEnablesTLSForRedissURL(t *testing.T) {
 	options, err := redisOptions(&config.Config{
-		RedisAddr: "rediss://redis-user:redis-password@example.com:6380",
+		RedisAddr: "rediss://example.com:6380",
 	})
 	if err != nil {
 		t.Fatalf("expected rediss URL to parse: %v", err)
 	}
 	if options.TLSConfig == nil {
 		t.Fatal("expected rediss URL to enable TLS")
+	}
+}
+
+func TestMongoClientOptionsUseDriverManagedTLS(t *testing.T) {
+	clientOptions := mongoClientOptions("mongodb+srv://user:password@example.mongodb.net/?retryWrites=true")
+
+	if clientOptions.TLSConfig != nil {
+		t.Fatal("expected mongodb+srv options not to inject a custom TLS config")
+	}
+	if clientOptions.ServerSelectionTimeout == nil || *clientOptions.ServerSelectionTimeout != 30*time.Second {
+		t.Fatalf("expected 30 second server selection timeout, got %v", clientOptions.ServerSelectionTimeout)
+	}
+	if clientOptions.ConnectTimeout == nil || *clientOptions.ConnectTimeout != 15*time.Second {
+		t.Fatalf("expected 15 second connect timeout, got %v", clientOptions.ConnectTimeout)
+	}
+	if clientOptions.SocketTimeout == nil || *clientOptions.SocketTimeout != 30*time.Second {
+		t.Fatalf("expected 30 second socket timeout, got %v", clientOptions.SocketTimeout)
 	}
 }
