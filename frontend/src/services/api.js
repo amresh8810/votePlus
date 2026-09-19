@@ -1,4 +1,4 @@
-const BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:8080/api/v1';
+import { API_ROOT } from '../config/api';
 
 let currentAccessToken = null;
 let onTokenRefreshedCallback = null;
@@ -29,7 +29,7 @@ const processQueue = (error, token = null) => {
 };
 
 export async function apiRequest(endpoint, options = {}) {
-  const url = `${BASE_URL}${endpoint.startsWith('/') ? endpoint : '/' + endpoint}`;
+  const url = `${API_ROOT}${endpoint.startsWith('/') ? endpoint : '/' + endpoint}`;
   const headers = {
     'Content-Type': 'application/json',
     ...options.headers,
@@ -67,7 +67,7 @@ export async function apiRequest(endpoint, options = {}) {
       isRefreshing = true;
 
       try {
-        const refreshResponse = await fetch(`${BASE_URL}/auth/refresh`, {
+        const refreshResponse = await fetch(`${API_ROOT}/auth/refresh`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           credentials: 'include',

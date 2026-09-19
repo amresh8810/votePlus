@@ -1,10 +1,5 @@
 import { useEffect, useMemo, useState } from 'react';
-
-const getWebSocketUrl = (pollId) => {
-  const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:8080/api/v1';
-  const wsUrl = apiUrl.replace(/^http/, 'ws');
-  return `${wsUrl}/public/polls/${pollId}/ws`;
-};
+import { getWebSocketUrl } from '../config/api';
 
 export const useDashboardRealtimeStats = (polls) => {
   const [votesByPoll, setVotesByPoll] = useState({});

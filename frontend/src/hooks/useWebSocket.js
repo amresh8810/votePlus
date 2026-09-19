@@ -1,15 +1,5 @@
 import { useEffect, useRef, useState, useCallback } from 'react';
-
-const getWebSocketUrl = (pollId) => {
-  const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:8080/api/v1';
-  // Replace http(s) protocol with ws(s)
-  let wsUrl = apiUrl.replace(/^http/, 'ws');
-  if (!wsUrl.startsWith('ws://') && !wsUrl.startsWith('wss://')) {
-    const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
-    wsUrl = `${protocol}//${window.location.host}${apiUrl}`;
-  }
-  return `${wsUrl}/public/polls/${pollId}/ws`;
-};
+import { getWebSocketUrl } from '../config/api';
 
 export const useWebSocket = (pollId, onUpdate) => {
   const [status, setStatus] = useState('connecting'); // 'connecting' | 'connected' | 'reconnecting' | 'disconnected'
