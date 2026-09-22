@@ -1,9 +1,9 @@
 <p align="center">
-  <img src="./screenshots/tools/go-logo.png" alt="Go" height="72">
-  <img src="https://img.shields.io/badge/Gin-008ECF?style=for-the-badge&logo=gin&logoColor=white" alt="Gin">
-  <img src="./screenshots/tools/mongodb-logo.png" alt="MongoDB" height="72">
-  <img src="./screenshots/tools/redis-logo.png" alt="Redis" height="72">
-  <img src="https://img.shields.io/badge/WebSockets-4B5563?style=for-the-badge&logo=socketdotio&logoColor=white" alt="WebSockets">
+  <img src="./screenshots/tools/go-logo.png" alt="Go" height="140">
+  <img src="https://img.shields.io/badge/Gin-008ECF?style=for-the-badge&logo=gin&logoColor=white" alt="Gin" height="56">
+  <img src="./screenshots/tools/mongodb-logo.png" alt="MongoDB" height="140">
+  <img src="./screenshots/tools/redis-logo.png" alt="Redis" height="140">
+  <img src="https://img.shields.io/badge/WebSockets-4B5563?style=for-the-badge&logo=socketdotio&logoColor=white" alt="WebSockets" height="56">
 </p>
 
 # Live Polling Tool — Backend
