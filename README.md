@@ -8,6 +8,56 @@ A full-stack, production-quality live polling application backend built as part 
 Create Poll → Share Link → Audience Votes → Live Results (no page refresh)
 ```
 
+## 📸 Application Walkthrough
+
+VotePulse provides a simple real-time polling experience from account creation
+to live analytics.
+
+### 1. Create an Account
+
+Users can create a VotePulse account with their name, email address, and password.
+
+![VotePulse Signup](./screenshots/04-signup.png)
+
+### 2. Login
+
+Existing users can securely log in to access their polls and dashboard.
+
+![VotePulse Login](./screenshots/01-login.png)
+
+### 3. Open a Public Poll
+
+Anyone with a shared poll link can open the public poll and participate.
+
+![VotePulse Public Poll](./screenshots/02-public-poll.png)
+
+### 4. Submit a Vote
+
+After selecting an option, a voter can submit a vote. VotePulse prevents the
+same voter from voting multiple times in the same poll.
+
+![VotePulse Vote](./screenshots/03-vote-result.png)
+
+### 5. Live Results
+
+Vote results update in real time, showing totals and percentages for each option.
+
+![VotePulse Live Results](./screenshots/03-vote-result.png)
+
+### 6. Poll Dashboard
+
+Poll creators can manage polls, view results, share links, export data, print
+results, and generate QR codes.
+
+![VotePulse Poll Dashboard](./screenshots/05-poll-dashboard.png)
+
+### 7. Analytics
+
+The analytics dashboard shows voting activity over time, total votes, peak
+voting day, active days, and average votes per active day.
+
+![VotePulse Analytics](./screenshots/06-analytics.png)
+
 ## 🛠 Technology Stack Architecture
 
 | Component | Technology | Role & Purpose |
