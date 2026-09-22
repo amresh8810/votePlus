@@ -1,4 +1,12 @@
-# Live Polling Tool — Backend (Go + Gin + MongoDB + Redis + WebSockets)
+<p align="center">
+  <img src="https://img.shields.io/badge/Go-00ADD8?style=for-the-badge&logo=go&logoColor=white" alt="Go">
+  <img src="https://img.shields.io/badge/Gin-008ECF?style=for-the-badge&logo=gin&logoColor=white" alt="Gin">
+  <img src="https://img.shields.io/badge/MongoDB-47A248?style=for-the-badge&logo=mongodb&logoColor=white" alt="MongoDB">
+  <img src="https://img.shields.io/badge/Redis-DC382D?style=for-the-badge&logo=redis&logoColor=white" alt="Redis">
+  <img src="https://img.shields.io/badge/WebSockets-4B5563?style=for-the-badge&logo=socketdotio&logoColor=white" alt="WebSockets">
+</p>
+
+# Live Polling Tool — Backend
 
 A full-stack, production-quality live polling application backend built as part of a developer internship assignment.
 
