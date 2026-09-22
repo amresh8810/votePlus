@@ -58,6 +58,28 @@ voting day, active days, and average votes per active day.
 
 ![VotePulse Analytics](./screenshots/06-analytics.png)
 
+## 🧰 Tools & Technologies
+
+The main tools used to build, run, and deploy VotePulse:
+
+<p align="center">
+  <a href="https://go.dev/"><img src="https://img.shields.io/badge/Go-1.23-00ADD8?style=for-the-badge&logo=go&logoColor=white" alt="Go"></a>
+  <a href="https://gin-gonic.com/"><img src="https://img.shields.io/badge/Gin-1.10-008ECF?style=for-the-badge&logo=gin&logoColor=white" alt="Gin"></a>
+  <a href="https://react.dev/"><img src="https://img.shields.io/badge/React-19-61DAFB?style=for-the-badge&logo=react&logoColor=111827" alt="React"></a>
+  <a href="https://vite.dev/"><img src="https://img.shields.io/badge/Vite-8-646CFF?style=for-the-badge&logo=vite&logoColor=white" alt="Vite"></a>
+</p>
+<p align="center">
+  <a href="https://www.mongodb.com/"><img src="https://img.shields.io/badge/MongoDB-6%2B-47A248?style=for-the-badge&logo=mongodb&logoColor=white" alt="MongoDB"></a>
+  <a href="https://redis.io/"><img src="https://img.shields.io/badge/Redis-7%2B-DC382D?style=for-the-badge&logo=redis&logoColor=white" alt="Redis"></a>
+  <a href="https://developer.mozilla.org/en-US/docs/Web/API/WebSockets_API"><img src="https://img.shields.io/badge/WebSocket-Realtime-4B5563?style=for-the-badge&logo=socketdotio&logoColor=white" alt="WebSocket"></a>
+  <a href="https://www.docker.com/"><img src="https://img.shields.io/badge/Docker-Local%20Services-2496ED?style=for-the-badge&logo=docker&logoColor=white" alt="Docker"></a>
+</p>
+<p align="center">
+  <a href="https://github.com/"><img src="https://img.shields.io/badge/GitHub-Source%20Control-181717?style=for-the-badge&logo=github&logoColor=white" alt="GitHub"></a>
+  <a href="https://vercel.com/"><img src="https://img.shields.io/badge/Vercel-Frontend-000000?style=for-the-badge&logo=vercel&logoColor=white" alt="Vercel"></a>
+  <a href="https://render.com/"><img src="https://img.shields.io/badge/Render-Backend-46E3B7?style=for-the-badge&logo=render&logoColor=111827" alt="Render"></a>
+</p>
+
 ## 🛠 Technology Stack Architecture
 
 | Component | Technology | Role & Purpose |
