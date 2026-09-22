@@ -45,6 +45,9 @@ type Config struct {
 	RateLimitAuthRequests int           // Maximum requests per window per IP for auth routes (default: 20)
 	RateLimitWindow       time.Duration // Time window for rate limiting (default: 1m)
 
+	// Password Reset
+	ExposeResetToken bool // If true, include reset tokens in responses for controlled testing only
+
 }
 
 // Load reads configuration from environment variables and returns a Config.
@@ -114,6 +117,7 @@ func Load() (*Config, error) {
 	jwtSecret := getEnv("JWT_SECRET", "dev_secret_key_change_in_production_12345")
 	skipDB := os.Getenv("SKIP_DB") == "true"
 	skipRedis := os.Getenv("SKIP_REDIS") == "true"
+	exposeResetToken := os.Getenv("EXPOSE_RESET_TOKEN") == "true"
 
 	cfg := &Config{
 		Port:                   getEnv("PORT", "8080"),
@@ -132,6 +136,7 @@ func Load() (*Config, error) {
 		RefreshTokenExpiration: refreshTokenExpiration,
 		RateLimitAuthRequests:  rateLimitReqs,
 		RateLimitWindow:        rateLimitWindow,
+		ExposeResetToken:       exposeResetToken,
 	}
 
 	if cfg.Env == "production" {

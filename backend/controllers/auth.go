@@ -249,7 +249,7 @@ func (ac *AuthController) ForgotPassword(c *gin.Context) {
 		"message": "If an account exists with that email address, password reset instructions have been generated.",
 	}
 
-	if devToken != "" && (ac.cfg == nil || ac.cfg.Env != "production") {
+	if devToken != "" && ac.cfg != nil && ac.cfg.ExposeResetToken {
 		response["dev_reset_token"] = devToken
 	}
 

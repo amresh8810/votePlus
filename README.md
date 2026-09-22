@@ -183,6 +183,9 @@ SKIP_REDIS=false
 # JWT Authentication
 JWT_SECRET=change_me_in_production_super_secret_key_32bytes
 JWT_EXPIRATION=24h
+
+# Password reset testing only. Keep false in production unless token exposure is intentional.
+EXPOSE_RESET_TOKEN=false
 ```
 
 ---
