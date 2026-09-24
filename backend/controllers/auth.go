@@ -44,7 +44,11 @@ func (ac *AuthController) setRefreshCookie(c *gin.Context, refreshToken string) 
 		maxAge = int(ac.cfg.RefreshTokenExpiration.Seconds())
 	}
 
-	c.SetSameSite(http.SameSiteLaxMode)
+	if isProduction {
+		c.SetSameSite(http.SameSiteNoneMode)
+	} else {
+		c.SetSameSite(http.SameSiteLaxMode)
+	}
 	c.SetCookie(
 		RefreshCookieName,
 		refreshToken,
@@ -62,7 +66,11 @@ func (ac *AuthController) clearRefreshCookie(c *gin.Context) {
 		isProduction = true
 	}
 
-	c.SetSameSite(http.SameSiteLaxMode)
+	if isProduction {
+		c.SetSameSite(http.SameSiteNoneMode)
+	} else {
+		c.SetSameSite(http.SameSiteLaxMode)
+	}
 	c.SetCookie(
 		RefreshCookieName,
 		"",
