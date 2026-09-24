@@ -23,6 +23,13 @@ function HomeRedirect() {
   return <Navigate to={isAuthenticated ? '/dashboard' : '/login'} replace />;
 }
 
+function GuestOnlyRoute({ children }) {
+  const { isAuthenticated, loading } = useAuth();
+  if (loading) return <Loading message="Loading VotePulse..." fullPage />;
+  if (isAuthenticated) return <Navigate to="/dashboard" replace />;
+  return children;
+}
+
 function NotFound() {
   return (
     <div className="page-layout text-center py-16">
@@ -46,8 +53,8 @@ function App() {
           <Route path="/" element={<HomeRedirect />} />
 
           {/* Public Auth Routes */}
-          <Route path="/login" element={<Login />} />
-          <Route path="/signup" element={<Signup />} />
+          <Route path="/login" element={<GuestOnlyRoute><Login /></GuestOnlyRoute>} />
+          <Route path="/signup" element={<GuestOnlyRoute><Signup /></GuestOnlyRoute>} />
           <Route path="/verify-email" element={<VerifyEmail />} />
           <Route path="/forgot-password" element={<ForgotPassword />} />
           <Route path="/reset-password" element={<ResetPassword />} />
