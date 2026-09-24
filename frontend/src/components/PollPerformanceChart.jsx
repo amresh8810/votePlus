@@ -1,4 +1,5 @@
 import { BarChart3 } from 'lucide-react';
+import { Link } from 'react-router-dom';
 
 export const PollPerformanceChart = ({ polls = [], votesByPoll = [] }) => {
   const rows = polls.map((poll) => ({
@@ -16,7 +17,7 @@ export const PollPerformanceChart = ({ polls = [], votesByPoll = [] }) => {
           <div>
             <p className="analytics-eyebrow">Comparison</p>
             <h2 id="poll-performance-title">Poll Performance</h2>
-            <p className="analytics-subtitle">Votes across all shared polls</p>
+            <p className="analytics-subtitle">Votes across all shared polls · Click a poll to view it</p>
           </div>
         </div>
         <span className="poll-performance-axis-label">{totalVotes.toLocaleString()} total votes</span>
@@ -29,13 +30,14 @@ export const PollPerformanceChart = ({ polls = [], votesByPoll = [] }) => {
         </div>
       ) : (
         <>
-          <div className="poll-performance-chart" role="img" aria-label="Horizontal bar chart comparing votes across polls">
+          <div className="poll-performance-chart" role="list" aria-label="Poll performance comparison">
             {rows.map((poll) => (
-              <div
+              <Link
+                to={`/p/${poll.id}`}
                 className="poll-performance-row"
                 key={poll.id}
                 title={`${poll.question}: ${poll.votes} ${poll.votes === 1 ? 'vote' : 'votes'} (${poll.status})`}
-                tabIndex="0"
+                role="listitem"
                 aria-label={`${poll.question}: ${poll.votes} ${poll.votes === 1 ? 'vote' : 'votes'}, ${poll.status}`}
               >
                 <span className="poll-performance-label" title={poll.question}>{poll.question}</span>
@@ -49,7 +51,7 @@ export const PollPerformanceChart = ({ polls = [], votesByPoll = [] }) => {
                   {poll.votes.toLocaleString()}
                   <small>{totalVotes ? `${((poll.votes / totalVotes) * 100).toFixed(0)}% share` : '0% share'}</small>
                 </strong>
-              </div>
+              </Link>
             ))}
           </div>
           <div className="poll-performance-axis" aria-hidden="true">
