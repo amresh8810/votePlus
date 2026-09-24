@@ -89,8 +89,12 @@ func Setup(cfg *config.Config, db *database.DB, redisClient *database.RedisClien
 		public.Use(middleware.VoterIdentity(cfg.Env == "production")) // Attach or issue anonymous voter identity cookie
 		{
 			public.GET("/:id", voteController.GetPublicPoll)
-			public.POST("/:id/vote", voteController.SubmitVote)
 			public.GET("/:id/ws", websocket.ServeWebSocket(wsHub, voteService))
+		}
+		voting := v1.Group("/public/polls")
+		voting.Use(middleware.RequireAuth(cfg))
+		{
+			voting.POST("/:id/vote", voteController.SubmitVote)
 		}
 	}
 

@@ -118,6 +118,8 @@ export const PublicPoll = () => {
       if (err.status === 409) {
         setHasVoted(true);
         setError('You have already voted in this poll.');
+      } else if (err.status === 401) {
+        setError('Please log in to vote. Each account can vote once per poll.');
       } else {
         setError(err.message || 'Failed to submit vote. Please try again.');
       }

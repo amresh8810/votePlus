@@ -49,13 +49,13 @@ func (vc *VoteController) SubmitVote(c *gin.Context) {
 		return
 	}
 
-	voterToken, ok := middleware.GetVoterToken(c)
-	if !ok || voterToken == "" {
-		middleware.RespondError(c, http.StatusBadRequest, "BAD_REQUEST", "Voter identity token missing")
+	userID, ok := middleware.GetAuthenticatedUserID(c)
+	if !ok || userID == "" {
+		middleware.RespondError(c, http.StatusUnauthorized, "UNAUTHORIZED", "Login is required to vote")
 		return
 	}
 
-	resp, err := vc.voteService.SubmitVote(c.Request.Context(), pollID, voterToken, req)
+	resp, err := vc.voteService.SubmitVote(c.Request.Context(), pollID, userID, req)
 	if err != nil {
 		if errors.Is(err, services.ErrInvalidPollID) {
 			middleware.RespondError(c, http.StatusBadRequest, "BAD_REQUEST", "Invalid poll ID format")

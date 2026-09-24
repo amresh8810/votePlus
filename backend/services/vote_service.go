@@ -167,7 +167,9 @@ func (s *VoteService) GetOrInitPollVoteCounts(ctx context.Context, pollIDHex str
 
 // SubmitVote validates, checks duplicates, saves vote to MongoDB (source of truth),
 // increments Redis cache, and publishes a real-time Pub/Sub update.
-func (s *VoteService) SubmitVote(ctx context.Context, pollIDHex string, voterToken string, req SubmitVoteRequest) (*SubmitVoteResponse, error) {
+// identityHex is the authenticated user ID; legacy voter tokens remain supported
+// for service-level callers that do not have an account identity.
+func (s *VoteService) SubmitVote(ctx context.Context, pollIDHex string, identityHex string, req SubmitVoteRequest) (*SubmitVoteResponse, error) {
 	if s.db == nil || s.db.VoteCollection() == nil {
 		return nil, ErrDBNotConnected
 	}
@@ -182,8 +184,8 @@ func (s *VoteService) SubmitVote(ctx context.Context, pollIDHex string, voterTok
 		return nil, fmt.Errorf("%w: option_id is required", ErrValidation)
 	}
 
-	voterToken = strings.TrimSpace(voterToken)
-	if voterToken == "" {
+	identityHex = strings.TrimSpace(identityHex)
+	if identityHex == "" {
 		return nil, ErrMissingVoterToken
 	}
 
@@ -214,8 +216,12 @@ func (s *VoteService) SubmitVote(ctx context.Context, pollIDHex string, voterTok
 		return nil, ErrInvalidOption
 	}
 
-	// 4. Derive deterministic voter ObjectID from voter token
-	voterID := VoterTokenToObjectID(voterToken)
+	// 4. Use the account ID for authenticated votes. Fall back to the
+	// deterministic token mapping for legacy non-account callers.
+	voterID, parseErr := primitive.ObjectIDFromHex(identityHex)
+	if parseErr != nil {
+		voterID = VoterTokenToObjectID(identityHex)
+	}
 
 	// 5. Application-level check for duplicate vote
 	var existingVote models.Vote
