@@ -165,19 +165,14 @@ func (s *PollService) CreatePoll(ctx context.Context, userIDHex string, req Crea
 	return FormatPollResponse(&poll), nil
 }
 
-// GetMyPolls returns polls created by the authenticated user, sorted newest first.
+// GetMyPolls returns all polls available to authenticated users, sorted newest first.
 // Optional statusFilter can be "active" or "closed".
-func (s *PollService) GetMyPolls(ctx context.Context, userIDHex string, statusFilter string) ([]*PollResponse, error) {
+func (s *PollService) GetMyPolls(ctx context.Context, _ string, statusFilter string) ([]*PollResponse, error) {
 	if s.db == nil || s.db.PollCollection() == nil {
 		return nil, ErrDBNotConnected
 	}
 
-	creatorID, err := primitive.ObjectIDFromHex(userIDHex)
-	if err != nil {
-		return nil, fmt.Errorf("%w: invalid user ID", ErrValidation)
-	}
-
-	filter := bson.M{"created_by": creatorID}
+	filter := bson.M{}
 
 	if statusFilter != "" {
 		normalizedStatus := strings.ToLower(strings.TrimSpace(statusFilter))
@@ -192,7 +187,7 @@ func (s *PollService) GetMyPolls(ctx context.Context, userIDHex string, statusFi
 
 	cursor, err := s.db.PollCollection().Find(ctx, filter, opts)
 	if err != nil {
-		return nil, fmt.Errorf("failed to query user polls: %w", err)
+		return nil, fmt.Errorf("failed to query polls: %w", err)
 	}
 	defer cursor.Close(ctx)
 
@@ -209,19 +204,16 @@ func (s *PollService) GetMyPolls(ctx context.Context, userIDHex string, statusFi
 	return responses, nil
 }
 
-// GetVoteTimeline returns vote totals for polls owned by the user.
-func (s *PollService) GetVoteTimeline(ctx context.Context, userIDHex, period, startDate, endDate string) ([]VoteTimelinePoint, error) {
+// GetVoteTimeline returns vote totals for all polls visible to the user.
+func (s *PollService) GetVoteTimeline(ctx context.Context, _, period, startDate, endDate string) ([]VoteTimelinePoint, error) {
 	if s.db == nil || s.db.PollCollection() == nil {
 		return nil, ErrDBNotConnected
-	}
-	userID, err := primitive.ObjectIDFromHex(userIDHex)
-	if err != nil {
-		return nil, fmt.Errorf("%w: invalid user ID", ErrValidation)
 	}
 
 	now := time.Now()
 	end := now
 	start := now
+	var err error
 	switch period {
 	case "", "today":
 		start = time.Date(now.Year(), now.Month(), now.Day(), 0, 0, 0, 0, now.Location())
@@ -243,16 +235,16 @@ func (s *PollService) GetVoteTimeline(ctx context.Context, userIDHex, period, st
 		return nil, fmt.Errorf("%w: period must be today, 7d, 30d, or custom", ErrValidation)
 	}
 
-	pollCursor, err := s.db.PollCollection().Find(ctx, bson.M{"created_by": userID}, options.Find().SetProjection(bson.M{"_id": 1}))
+	pollCursor, err := s.db.PollCollection().Find(ctx, bson.M{}, options.Find().SetProjection(bson.M{"_id": 1}))
 	if err != nil {
-		return nil, fmt.Errorf("failed to find owned polls: %w", err)
+		return nil, fmt.Errorf("failed to find polls: %w", err)
 	}
 	defer pollCursor.Close(ctx)
 	var polls []struct {
 		ID primitive.ObjectID `bson:"_id"`
 	}
 	if err := pollCursor.All(ctx, &polls); err != nil {
-		return nil, fmt.Errorf("failed to read owned polls: %w", err)
+		return nil, fmt.Errorf("failed to read polls: %w", err)
 	}
 
 	hourly := period == "" || period == "today"
@@ -307,8 +299,8 @@ func timelinePoints(points map[string]int64) []VoteTimelinePoint {
 	return result
 }
 
-// GetPollByID retrieves a single poll created by the authenticated user.
-func (s *PollService) GetPollByID(ctx context.Context, pollIDHex string, userIDHex string) (*PollResponse, error) {
+// GetPollByID retrieves a poll visible to the authenticated user.
+func (s *PollService) GetPollByID(ctx context.Context, pollIDHex string, _ string) (*PollResponse, error) {
 	if s.db == nil || s.db.PollCollection() == nil {
 		return nil, ErrDBNotConnected
 	}
@@ -316,11 +308,6 @@ func (s *PollService) GetPollByID(ctx context.Context, pollIDHex string, userIDH
 	pollID, err := primitive.ObjectIDFromHex(pollIDHex)
 	if err != nil {
 		return nil, ErrInvalidPollID
-	}
-
-	userID, err := primitive.ObjectIDFromHex(userIDHex)
-	if err != nil {
-		return nil, fmt.Errorf("%w: invalid user ID", ErrValidation)
 	}
 
 	var poll models.Poll
@@ -332,15 +319,10 @@ func (s *PollService) GetPollByID(ctx context.Context, pollIDHex string, userIDH
 		return nil, fmt.Errorf("database query error: %w", err)
 	}
 
-	// Ownership check: only creator can access
-	if poll.CreatedBy != userID {
-		return nil, ErrForbidden
-	}
-
 	return FormatPollResponse(&poll), nil
 }
 
-// UpdatePoll updates question and options of an ACTIVE poll owned by the authenticated user.
+// UpdatePoll updates question and options of an ACTIVE poll owned by the user.
 func (s *PollService) UpdatePoll(ctx context.Context, pollIDHex string, userIDHex string, req UpdatePollRequest) (*PollResponse, error) {
 	if s.db == nil || s.db.PollCollection() == nil {
 		return nil, ErrDBNotConnected
@@ -370,7 +352,6 @@ func (s *PollService) UpdatePoll(ctx context.Context, pollIDHex string, userIDHe
 		return nil, fmt.Errorf("database query error: %w", err)
 	}
 
-	// Ownership check
 	if existingPoll.CreatedBy != userID {
 		return nil, ErrForbidden
 	}
@@ -448,7 +429,6 @@ func (s *PollService) ClosePoll(ctx context.Context, pollIDHex string, userIDHex
 		return nil, fmt.Errorf("database query error: %w", err)
 	}
 
-	// Ownership check
 	if poll.CreatedBy != userID {
 		return nil, ErrForbidden
 	}
@@ -486,7 +466,6 @@ func (s *PollService) DeletePoll(ctx context.Context, pollIDHex string, userIDHe
 	if err != nil {
 		return fmt.Errorf("%w: invalid user ID", ErrValidation)
 	}
-
 	var poll models.Poll
 	if err := s.db.PollCollection().FindOne(ctx, bson.M{"_id": pollID}).Decode(&poll); err != nil {
 		if errors.Is(err, mongo.ErrNoDocuments) {
@@ -497,7 +476,6 @@ func (s *PollService) DeletePoll(ctx context.Context, pollIDHex string, userIDHe
 	if poll.CreatedBy != userID {
 		return ErrForbidden
 	}
-
 	if _, err := s.db.VoteCollection().DeleteMany(ctx, bson.M{"poll_id": pollID}); err != nil {
 		return fmt.Errorf("failed to delete poll votes: %w", err)
 	}

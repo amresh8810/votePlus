@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { CheckCircle2, XCircle, Copy, Check, ExternalLink, Settings, Trash2, BarChart3 } from 'lucide-react';
 
-export const PollCard = ({ poll, votes = 0, onClosePoll, onDeletePoll, onViewResults }) => {
+export const PollCard = ({ poll, votes = 0, canManage = false, onClosePoll, onDeletePoll, onViewResults }) => {
   const [copied, setCopied] = useState(false);
 
   const publicUrl = `${window.location.origin}/p/${poll.id}`;
@@ -52,10 +52,12 @@ export const PollCard = ({ poll, votes = 0, onClosePoll, onDeletePoll, onViewRes
       </div>
 
       <div className="poll-card-actions">
-        <Link to={`/polls/${poll.id}`} className="btn btn-secondary btn-sm">
-          <Settings size={14} />
-          <span>Manage</span>
-        </Link>
+        {canManage && (
+          <Link to={`/polls/${poll.id}`} className="btn btn-secondary btn-sm">
+            <Settings size={14} />
+            <span>Manage</span>
+          </Link>
+        )}
         {onViewResults && (
           <button type="button" onClick={() => onViewResults(poll)} className="btn btn-primary btn-sm">
             <BarChart3 size={14} />
@@ -73,7 +75,7 @@ export const PollCard = ({ poll, votes = 0, onClosePoll, onDeletePoll, onViewRes
           <span>{copied ? 'Copied!' : 'Copy Link'}</span>
         </button>
 
-        {isActive && onClosePoll && (
+        {canManage && isActive && onClosePoll && (
           <button
             type="button"
             onClick={(e) => {
@@ -86,7 +88,7 @@ export const PollCard = ({ poll, votes = 0, onClosePoll, onDeletePoll, onViewRes
           </button>
         )}
 
-        {onDeletePoll && (
+        {canManage && onDeletePoll && (
           <button
             type="button"
             onClick={(e) => {

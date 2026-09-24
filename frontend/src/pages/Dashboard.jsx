@@ -272,7 +272,7 @@ export const Dashboard = () => {
           <div>
             <p className="analytics-eyebrow">Insights</p>
             <h2 id="dashboard-analytics-title">Analytics</h2>
-            <p>Track voting activity and compare your polls.</p>
+            <p>Track voting activity and compare all shared polls.</p>
             <span className={`dashboard-realtime-status ${realtimeStatus === 'Live updates connected' ? 'dashboard-realtime-status-connected' : ''}`}>
               <span aria-hidden="true" />{realtimeStatus}
             </span>
@@ -295,7 +295,7 @@ export const Dashboard = () => {
         <div className="poll-management-heading">
           <div>
             <h2 id="polls-heading">Polls</h2>
-            <p>Manage and monitor your polls <span className="dashboard-live-indicator"><span aria-hidden="true">●</span> Live</span></p>
+            <p>Manage and monitor all shared polls <span className="dashboard-live-indicator"><span aria-hidden="true">●</span> Live</span></p>
           </div>
           {polls.length > 0 && (
             <span className="poll-result-count">
@@ -363,7 +363,7 @@ export const Dashboard = () => {
       </section>
 
       {loading ? (
-        <Loading message="Loading your polls..." />
+        <Loading message="Loading shared polls..." />
       ) : polls.length === 0 ? (
         <div className="empty-state-card">
           <div className="empty-state-icon">
@@ -393,6 +393,7 @@ export const Dashboard = () => {
             polls={filteredPolls}
             votesByPoll={stats.votesByPoll}
             lastActivityByPoll={stats.lastActivityByPoll}
+            userId={user.id}
             onClosePoll={handleClosePoll}
             onDeletePoll={handleDeletePoll}
             onViewResults={setSelectedResultsPoll}
@@ -403,6 +404,7 @@ export const Dashboard = () => {
                 key={poll.id}
                 poll={poll}
                 votes={stats.votesByPoll[poll.id] || 0}
+                canManage={poll.created_by === user.id}
                 counts={stats.countsByPoll[poll.id] || {}}
                 onClosePoll={handleClosePoll}
                 onDeletePoll={handleDeletePoll}

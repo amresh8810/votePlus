@@ -11,7 +11,7 @@ const formatDate = (date) => {
   });
 };
 
-export const PollTable = ({ polls, votesByPoll, lastActivityByPoll, onClosePoll, onDeletePoll, onViewResults }) => {
+export const PollTable = ({ polls, votesByPoll, lastActivityByPoll, userId, onClosePoll, onDeletePoll, onViewResults }) => {
   const [copiedPollId, setCopiedPollId] = useState('');
   const [openMenuId, setOpenMenuId] = useState('');
 
@@ -45,6 +45,7 @@ export const PollTable = ({ polls, votesByPoll, lastActivityByPoll, onClosePoll,
           <tbody>
             {polls.map((poll) => {
               const isActive = poll.status === 'active';
+              const canManage = poll.created_by === userId;
               return (
                 <tr key={poll.id}>
                   <td className="poll-table-question">{poll.question}</td>
@@ -63,10 +64,12 @@ export const PollTable = ({ polls, votesByPoll, lastActivityByPoll, onClosePoll,
                         <BarChart3 size={15} />
                         <span>Live Results</span>
                       </button>
-                      <Link to={`/polls/${poll.id}`} className="table-action table-action-secondary" title="Manage poll" aria-label={`Manage ${poll.question}`}>
-                        <Settings size={15} />
-                        <span>Manage</span>
-                      </Link>
+                      {canManage && (
+                        <Link to={`/polls/${poll.id}`} className="table-action table-action-secondary" title="Manage poll" aria-label={`Manage ${poll.question}`}>
+                          <Settings size={15} />
+                          <span>Manage</span>
+                        </Link>
+                      )}
                       <div className="poll-more-menu">
                         <button type="button" className="table-action" title="More poll actions" aria-label={`More actions for ${poll.question}`} aria-expanded={openMenuId === poll.id} onClick={() => setOpenMenuId(openMenuId === poll.id ? '' : poll.id)}>
                           <MoreHorizontal size={17} />
@@ -75,8 +78,8 @@ export const PollTable = ({ polls, votesByPoll, lastActivityByPoll, onClosePoll,
                           <div className="poll-more-menu-items">
                             <a href={`/p/${poll.id}`} target="_blank" rel="noopener noreferrer" onClick={() => setOpenMenuId('')}><ExternalLink size={14} /> Open Public</a>
                             <button type="button" onClick={() => { copyPollLink(poll.id); setOpenMenuId(''); }}><Copy size={14} /> {copiedPollId === poll.id ? 'Copied' : 'Copy Link'}</button>
-                            {isActive && <button type="button" className="menu-warning" onClick={() => { onClosePoll(poll.id); setOpenMenuId(''); }}><XCircle size={14} /> Close Poll</button>}
-                            <button type="button" className="menu-danger" onClick={() => { onDeletePoll(poll.id); setOpenMenuId(''); }}><Trash2 size={14} /> Delete</button>
+                            {canManage && isActive && <button type="button" className="menu-warning" onClick={() => { onClosePoll(poll.id); setOpenMenuId(''); }}><XCircle size={14} /> Close Poll</button>}
+                            {canManage && <button type="button" className="menu-danger" onClick={() => { onDeletePoll(poll.id); setOpenMenuId(''); }}><Trash2 size={14} /> Delete</button>}
                           </div>
                         )}
                       </div>

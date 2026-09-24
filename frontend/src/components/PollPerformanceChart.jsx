@@ -16,7 +16,7 @@ export const PollPerformanceChart = ({ polls = [], votesByPoll = [] }) => {
           <div>
             <p className="analytics-eyebrow">Comparison</p>
             <h2 id="poll-performance-title">Poll Performance</h2>
-            <p className="analytics-subtitle">Votes across your polls</p>
+            <p className="analytics-subtitle">Votes across all shared polls</p>
           </div>
         </div>
         <span className="poll-performance-axis-label">{totalVotes.toLocaleString()} total votes</span>
