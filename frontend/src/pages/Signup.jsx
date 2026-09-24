@@ -83,7 +83,7 @@ export const Signup = () => {
           <Input
             label="Full Name"
             id="name"
-            placeholder="Jane Doe"
+            placeholder="amreshkumar"
             value={name}
             onChange={(e) => setName(e.target.value)}
             required
@@ -94,7 +94,7 @@ export const Signup = () => {
             label="Email Address"
             id="email"
             type="email"
-            placeholder="jane@example.com"
+            placeholder="amreshkumar@gmail.com"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             required
